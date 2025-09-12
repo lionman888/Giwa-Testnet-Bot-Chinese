@@ -1,0 +1,31 @@
+{
+  "name": "giwa-testnet-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Giwa Bridge + ERC-20 CLI with real-time TUI",
+  "type": "module",
+  "main": "kazmight.js",
+  "scripts": {
+    "start": "node kazmight.js"
+  },
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.10.0",
+    "figlet": "^1.6.0",
+    "moment": "^2.30.1"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "license": "MIT",
+  "keywords": [
+    "giwa",
+    "bridge",
+    "erc20",
+    "cli",
+    "tui",
+    "blessed",
+    "ethers"
+  ]
+}
