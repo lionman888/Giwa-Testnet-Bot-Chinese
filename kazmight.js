@@ -3,7 +3,7 @@ dotenv.config();
 import { readFile, writeFile } from "fs/promises";
 import fs from "fs";
 import { ethers } from "ethers";
-import CryptoBotUI from "./ui.js";
+import CryptoBotUI from "./CryptoBotUI.js";
 
 
 const L1_NETWORK = {
