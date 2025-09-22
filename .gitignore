@@ -13,6 +13,13 @@ Thumbs.db
 .env.*
 !.env.example
 
+# 私钥文件
+private_keys.txt
+keys.txt
+wallets.txt
+*.private
+*.keys
+
 
 logs/
 *.log

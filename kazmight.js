@@ -561,11 +561,55 @@ async function sendTokenMenu(walletsL2List) {
 }
 
 
-async function main() {
-  const keysRaw = process.env.PRIVATE_KEYS || process.env.PRIVATE_KEY || "";
-  const lines = keysRaw.split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+/**
+ * 加载私钥 - 支持从环境变量或外部文件读取
+ */
+async function loadPrivateKeys() {
+  let keysRaw = "";
+  
+  // 优先级1: 从外部文件读取
+  const keysFile = process.env.PRIVATE_KEYS_FILE;
+  if (keysFile) {
+    try {
+      if (fs.existsSync(keysFile)) {
+        keysRaw = await readFile(keysFile, 'utf-8');
+        ui.log("info", `✅ 从文件加载私钥: ${keysFile}`);
+      } else {
+        ui.log("error", `❌ 私钥文件不存在: ${keysFile}`);
+        return [];
+      }
+    } catch (error) {
+      ui.log("error", `❌ 读取私钥文件失败: ${error.message}`);
+      return [];
+    }
+  }
+  
+  // 优先级2: 从环境变量读取
+  if (!keysRaw) {
+    keysRaw = process.env.PRIVATE_KEYS || process.env.PRIVATE_KEY || "";
+    if (keysRaw) {
+      ui.log("info", "✅ 从环境变量加载私钥");
+    }
+  }
+  
+  // 解析私钥
+  const lines = keysRaw.split(/[,\n\r]/).map((s) => s.trim()).filter(Boolean);
+  
   if (!lines.length) {
-    ui.log("error", "未找到私钥. 请在 .env 文件中设置 PRIVATE_KEYS 或 PRIVATE_KEY");
+    ui.log("error", "❌ 未找到私钥! 请配置以下任一选项:");
+    ui.log("error", "   1. 设置 PRIVATE_KEYS_FILE=私钥文件路径 (推荐)");
+    ui.log("error", "   2. 设置 PRIVATE_KEYS=私钥1,私钥2...");
+    ui.log("error", "   3. 设置 PRIVATE_KEY=单个私钥");
+    return [];
+  }
+  
+  ui.log("info", `🔑 成功加载 ${lines.length} 个私钥`);
+  return lines;
+}
+
+async function main() {
+  const lines = await loadPrivateKeys();
+  if (!lines.length) {
     return;
   }
 
