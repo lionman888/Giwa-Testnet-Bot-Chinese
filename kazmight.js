@@ -91,16 +91,16 @@ const ERC20_ABI = [
 
 
 const ui = new CryptoBotUI({
-  title: "Giwa Bridge + ERC20 Dashboard",
+  title: "Giwa跨链桥 + ERC20 控制台",
   menuItems: [
-    "1) Bridge L1 -> L2",
-    "2) Bridge L2 -> L1",
-    "3) Deploy ERC-20 (Giwa)",
-    "4) Send ERC-20 to Random (Giwa)",
-    "5) Exit"
+    "1) 跨链桥 L1 -> L2",
+    "2) 跨链桥 L2 -> L1",
+    "3) 部署 ERC-20 (Giwa)",
+    "4) 发送 ERC-20 到随机地址 (Giwa)",
+    "5) 退出"
   ],
-  tickerText1: "GIWA TESTNET",
-  tickerText2: "Invictuslabs - Airdrops",
+  tickerText1: "GIWA 测试网",
+  tickerText2: "Invictuslabs - 空投",
   nativeSymbol: "ETH"
 });
 
@@ -131,9 +131,9 @@ async function promptText(label, initial) {
   return String(s).trim();
 }
 async function pickIndexOrCancel(arr, label) {
-  if (!Array.isArray(arr) || arr.length === 0) throw new Error(`${label}: empty list`);
+  if (!Array.isArray(arr) || arr.length === 0) throw new Error(`${label}: 列表为空`);
   if (arr.length === 1) return 0;
-  const n = await ui.promptNumber(`Pick ${label} index [0..${arr.length - 1}] -> `);
+  const n = await ui.promptNumber(`选择 ${label} 索引 [0..${arr.length - 1}] -> `);
   if (n === null || !Number.isFinite(n)) throw new Cancelled();
   const i = Math.floor(n);
   if (i < 0 || i >= arr.length) throw new Cancelled();
@@ -266,8 +266,8 @@ async function sendErc20Random({ wallet, tokenAddress, amountHuman, decimals, ti
   const name = await token.name();
   const sym = await token.symbol();
 
-  ui.log("info", `Token: ${name} (${sym}) @ ${tokenAddress}`);
-  ui.log("info", `Amount: ${amountHuman} (${amountUnits} units), Times=${times}, Delay=[${minDelay},${maxDelay}]s`);
+  ui.log("info", `代币: ${name} (${sym}) @ ${tokenAddress}`);
+  ui.log("info", `数量: ${amountHuman} (${amountUnits} 单位), 次数=${times}, 延迟=[${minDelay},${maxDelay}]秒`);
 
   for (let i = 0; i < times; i++) {
     const to = randomAddress();
@@ -295,7 +295,7 @@ async function sendErc20Random({ wallet, tokenAddress, amountHuman, decimals, ti
         successRate: ((ui.transactionCount - ui.failedTx) / Math.max(1, ui.transactionCount)) * 100
       });
 
-      ui.log("success", `[#${i + 1}/${times}] Sent to ${to} | Block ${rcpt.blockNumber} | Tx ${tx.hash}`);
+      ui.log("success", `[#${i + 1}/${times}] 已发送到 ${to} | 区块 ${rcpt.blockNumber} | 交易 ${tx.hash}`);
       ui.log("info", `${L2_NETWORK.explorer}${tx.hash}`);
     } catch (e) {
       ui.failedTx += 1;
@@ -315,7 +315,7 @@ async function sendErc20Random({ wallet, tokenAddress, amountHuman, decimals, ti
         minDelay === maxDelay
           ? minDelay
           : Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
-      await ui.countdown(delay * 1000, "Delay");
+      await ui.countdown(delay * 1000, "延迟");
     }
   }
 }
@@ -378,21 +378,21 @@ async function runBridge({ direction, bridgeCount, amountEth, minDelay, maxDelay
 
   for (const w of wallets) {
     const addr = await w.getAddress();
-    ui.log("bridge", `Address ${addr}`);
+    ui.log("bridge", `地址 ${addr}`);
 
     await refreshWalletPanelDual(w);
 
     try {
       const bal = await getBalance(addr, direction === 1 ? providerL1 : providerL2);
-      ui.log("info", `Balance: ${asEther(bal)} ETH | Amount: ${amountEth} ETH`);
+      ui.log("info", `余额: ${asEther(bal)} ETH | 金额: ${amountEth} ETH`);
 
       if (bal < ethers.parseEther(String(amountEth))) {
-        ui.log("warning", "Insufficient balance, skipped.");
+        ui.log("warning", "余额不足，跳过.");
         continue;
       }
 
       for (let i = 0; i < bridgeCount; i++) {
-        ui.log("bridge", `Run ${i + 1} / ${bridgeCount}`);
+        ui.log("bridge", `运行 ${i + 1} / ${bridgeCount}`);
 
         try {
           ui.pendingTx += 1;
@@ -402,12 +402,12 @@ async function runBridge({ direction, bridgeCount, amountEth, minDelay, maxDelay
           if (direction === 1) {
             const res = await performDeposit({ wallet: w, toAddress: addr, amountEth });
             tx = res.tx; receipt = res.receipt;
-            ui.log("success", `L1 -> L2 | Block ${receipt.blockNumber} | Tx ${tx.hash}`);
+            ui.log("success", `L1 -> L2 | 区块 ${receipt.blockNumber} | 交易 ${tx.hash}`);
             ui.log("info", `${L1_NETWORK.explorer}${tx.hash}`);
           } else {
             const res = await performWithdraw({ wallet: w, toAddress: addr, amountEth });
             tx = res.tx; receipt = res.receipt;
-            ui.log("success", `L2 -> L1 | Block ${receipt.blockNumber} | Tx ${tx.hash}`);
+            ui.log("success", `L2 -> L1 | 区块 ${receipt.blockNumber} | 交易 ${tx.hash}`);
             ui.log("info", `${L2_NETWORK.explorer}${tx.hash}`);
           }
 
@@ -436,7 +436,7 @@ async function runBridge({ direction, bridgeCount, amountEth, minDelay, maxDelay
             minDelay === maxDelay
               ? minDelay
               : Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
-          await ui.countdown(delay * 1000, "Delay");
+          await ui.countdown(delay * 1000, "延迟");
         }
       }
     } catch (e) {
@@ -445,7 +445,7 @@ async function runBridge({ direction, bridgeCount, amountEth, minDelay, maxDelay
   }
 
   ui.setActive(false);
-  ui.log("completed", "All accounts processed. Back to menu.");
+  ui.log("completed", "所有账户处理完成. 返回菜单.");
 }
 
 async function deployTokenFlow(walletsL2List) {
@@ -455,12 +455,12 @@ async function deployTokenFlow(walletsL2List) {
     const wallet = walletsL2List[idx];
     await refreshWalletPanelDual(wallet);
 
-    const name = await promptText("Token name:");
-    const symbol = await promptText("Token symbol (ticker):");
-    let decs = await promptInt(`Decimals (0..36)`, 0, 36);
+    const name = await promptText("代币名称:");
+    const symbol = await promptText("代币符号 (ticker):");
+    let decs = await promptInt(`小数位数 (0..36)`, 0, 36);
     if (!Number.isFinite(decs)) decs = DEFAULT_DECIMALS;
 
-    const supplyHuman = await promptNum("Total supply Tokens:");
+    const supplyHuman = await promptNum("代币总供应量:");
     if (supplyHuman <= 0) throw new Cancelled();
 
     const { tokenAddr, txHash, blockNumber } = await deployErc20({
@@ -472,12 +472,12 @@ async function deployTokenFlow(walletsL2List) {
     });
 
     if (!tokenAddr) {
-      ui.log("warning", `Deployed but token address not found in event. Tx ${txHash}`);
+      ui.log("warning", `已部署但在事件中未找到代币地址. 交易 ${txHash}`);
       ui.setActive(false);
       return;
     }
 
-    ui.log("success", `Deployed ${name} (${symbol}) @ ${tokenAddr} | Block ${blockNumber}`);
+    ui.log("success", `已部署 ${name} (${symbol}) @ ${tokenAddr} | 区块 ${blockNumber}`);
     ui.log("info", `${L2_NETWORK.explorer}${txHash}`);
 
     const store = await loadTokens();
@@ -494,12 +494,12 @@ async function deployTokenFlow(walletsL2List) {
 
     await refreshTokensPanel(wallet);
 
-    const sendAns = await ui.promptText("Send this token to random addresses now? (y/n)", "n");
+    const sendAns = await ui.promptText("现在将此代币发送到随机地址吗? (y/n)", "n");
     if (sendAns !== null && String(sendAns).toLowerCase().startsWith("y")) {
-      const amt = await promptNum("Amount per Tokens:");
-      const times = await promptInt("Number of transfers:", 1);
-      const minD = await promptInt("Min delay (seconds):", 0);
-      const maxD = await promptInt("Max delay (seconds):", minD);
+      const amt = await promptNum("每次发送的代币数量:");
+      const times = await promptInt("转账次数:", 1);
+      const minD = await promptInt("最小延迟 (秒):", 0);
+      const maxD = await promptInt("最大延迟 (秒):", minD);
 
       await sendErc20Random({
         wallet,
@@ -512,7 +512,7 @@ async function deployTokenFlow(walletsL2List) {
       });
     }
   } catch (e) {
-    if (isCancelled(e)) ui.log("warning", "Cancelled by user.");
+    if (isCancelled(e)) ui.log("warning", "用户取消操作.");
     else ui.log("failed", e?.message || String(e));
   }
   ui.setActive(false);
@@ -523,7 +523,7 @@ async function sendTokenMenu(walletsL2List) {
   try {
     const store = await loadTokens();
     if (!store.tokens.length) {
-      ui.log("warning", "No saved tokens yet. Deploy one first.");
+      ui.log("warning", "暂无已保存的代币. 请先部署一个.");
       return;
     }
 
@@ -537,10 +537,10 @@ async function sendTokenMenu(walletsL2List) {
     const wallet = walletsL2List[wIdx];
     await refreshWalletPanelDual(wallet);
 
-    const amountHuman = await promptNum("Amount Tokens:");
-    const times = await promptInt("Number of transfers:", 1);
-    const minDelay = await promptInt("Min delay (seconds):", 0);
-    const maxDelay = await promptInt("Max delay (seconds):", minDelay);
+    const amountHuman = await promptNum("代币数量:");
+    const times = await promptInt("转账次数:", 1);
+    const minDelay = await promptInt("最小延迟 (秒):", 0);
+    const maxDelay = await promptInt("最大延迟 (秒):", minDelay);
 
     await sendErc20Random({
       wallet,
@@ -554,7 +554,7 @@ async function sendTokenMenu(walletsL2List) {
 
     await refreshTokensPanel(wallet);
   } catch (e) {
-    if (isCancelled(e)) ui.log("warning", "Cancelled by user.");
+    if (isCancelled(e)) ui.log("warning", "用户取消操作.");
     else ui.log("failed", e?.message || String(e));
   }
   ui.setActive(false);
@@ -565,7 +565,7 @@ async function main() {
   const keysRaw = process.env.PRIVATE_KEYS || process.env.PRIVATE_KEY || "";
   const lines = keysRaw.split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
   if (!lines.length) {
-    ui.log("error", "No private keys found. Set PRIVATE_KEYS or PRIVATE_KEY in .env");
+    ui.log("error", "未找到私钥. 请在 .env 文件中设置 PRIVATE_KEYS 或 PRIVATE_KEY");
     return;
   }
 
@@ -594,10 +594,10 @@ async function main() {
     try {
       switch (index) {
         case 0: { 
-          const bridgeCount = await promptInt("Bridge Count:", 1);
-          const amountEth = await promptNum("ETH Amount:");
-          const minDelay = await promptInt("Min delay (s):", 0);
-          const maxDelay = await promptInt("Max delay (s):", minDelay);
+          const bridgeCount = await promptInt("桥接次数:", 1);
+          const amountEth = await promptNum("ETH 数量:");
+          const minDelay = await promptInt("最小延迟 (秒):", 0);
+          const maxDelay = await promptInt("最大延迟 (秒):", minDelay);
           await runBridge({
             direction: 1,
             bridgeCount,
@@ -609,10 +609,10 @@ async function main() {
           break;
         }
         case 1: { 
-          const bridgeCount = await promptInt("Bridge Count:", 1);
-          const amountEth = await promptNum("ETH Amount:");
-          const minDelay = await promptInt("Min delay (s):", 0);
-          const maxDelay = await promptInt("Max delay (s):", minDelay);
+          const bridgeCount = await promptInt("桥接次数:", 1);
+          const amountEth = await promptNum("ETH 数量:");
+          const minDelay = await promptInt("最小延迟 (秒):", 0);
+          const maxDelay = await promptInt("最大延迟 (秒):", minDelay);
           await runBridge({
             direction: 2,
             bridgeCount,
@@ -639,7 +639,7 @@ async function main() {
           break;
       }
     } catch (e) {
-      if (isCancelled(e)) ui.log("warning", "Cancelled by user.");
+      if (isCancelled(e)) ui.log("warning", "用户取消操作.");
       else ui.log("failed", e?.message || String(e));
     }
   });

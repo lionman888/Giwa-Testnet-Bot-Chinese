@@ -30,13 +30,13 @@ class CryptoBotUI extends EventEmitter {
         ...(options.colors || {})
       },
       menuItems: options.menuItems || [
-        '1) Random Trade',
-        '2) Random Add Position',
-        '3) Deploy Token Contract',
-        '4) Run All Features',
-        '5) Wrap FOGO → SPL FOGO',
-        '6) Unwrap SPL FOGO → FOGO',
-        '7) Exit'
+        '1) 随机交易',
+        '2) 随机添加仓位',
+        '3) 部署代币合约',
+        '4) 运行所有功能',
+        '5) 包装 FOGO → SPL FOGO',
+        '6) 解包 SPL FOGO → FOGO',
+        '7) 退出'
       ],
     };
 
@@ -112,7 +112,7 @@ class CryptoBotUI extends EventEmitter {
     });
 
     this.walletBox = blessed.box({
-      parent: this.mainContainer, label: ' Wallet Information ',
+      parent: this.mainContainer, label: ' 钱包信息 ',
       top: 0, left: 0, width: '50%', height: '40%',
       border: { type: 'line' },
       style: { fg: C.text, border: { fg: C.primary }, label: { fg: C.primary, bold: true } },
@@ -120,7 +120,7 @@ class CryptoBotUI extends EventEmitter {
     });
 
     this.tokenBox = blessed.box({
-      parent: this.mainContainer, label: ' Token Information ',
+      parent: this.mainContainer, label: ' 代币信息 ',
       top: 0, left: '50%', width: '50%', height: '40%',
       border: { type: 'line' },
       style: { fg: C.text, border: { fg: C.secondary }, label: { fg: C.secondary, bold: true } },
@@ -128,7 +128,7 @@ class CryptoBotUI extends EventEmitter {
     });
 
     this.menuBox = blessed.box({
-      parent: this.mainContainer, label: ' Transaction Menu ',
+      parent: this.mainContainer, label: ' 交易菜单 ',
       top: '40%', left: 0, width: '30%', height: '60%',
       border: { type: 'line' },
       style: { fg: C.text, border: { fg: C.info }, label: { fg: C.info, bold: true } }
@@ -148,7 +148,7 @@ class CryptoBotUI extends EventEmitter {
     });
 
     this.statsBox = blessed.box({
-      parent: this.mainContainer, label: ' Statistics ',
+      parent: this.mainContainer, label: ' 统计信息 ',
       top: '40%', left: '30%', width: '35%', height: '30%',
       border: { type: 'line' },
       style: { fg: C.text, border: { fg: C.orange }, label: { fg: C.orange, bold: true } },
@@ -156,7 +156,7 @@ class CryptoBotUI extends EventEmitter {
     });
 
     this.logsBox = blessed.log({
-      parent: this.mainContainer, label: ' Transaction Logs ',
+      parent: this.mainContainer, label: ' 交易日志 ',
       top: '40%', left: '65%', width: '35%', height: '60%',
       border: { type: 'line' },
       scrollable: true, alwaysScroll: true, mouse: true, keys: true, vi: true,
@@ -178,7 +178,7 @@ class CryptoBotUI extends EventEmitter {
     });
 
     this.activityBox = blessed.box({
-      parent: this.mainContainer, label: ' Activity Monitor ',
+      parent: this.mainContainer, label: ' 活动监控 ',
       top: '70%', left: '30%', width: '35%', height: '30%',
       border: { type: 'line' },
       style: { fg: C.text, border: { fg: C.pink }, label: { fg: C.pink, bold: true } },
@@ -258,15 +258,15 @@ class CryptoBotUI extends EventEmitter {
         const now = Date.now();
         const rem = Math.max(0, end - now);
         const s   = (rem / 1000);
-        const text = `${label}: ${s.toFixed(1)}s remaining`;
-        this.delayOverlay.setContent(`{${this.opts.colors.cyan}-fg}[PENDING]{/${this.opts.colors.cyan}-fg} {${this.opts.colors.orange}-fg}${text}{/${this.opts.colors.orange}-fg}`);
+        const text = `${label}: 剩余 ${s.toFixed(1)}秒`;
+        this.delayOverlay.setContent(`{${this.opts.colors.cyan}-fg}[处理中]{/${this.opts.colors.cyan}-fg} {${this.opts.colors.orange}-fg}${text}{/${this.opts.colors.orange}-fg}`);
         this.render();
         if (rem <= 0) {
           clearInterval(id);
           this._intervals.delete(id);
           this.delayOverlay.hide();
           this.render();
-          this.log('completed', `${label} finished`);
+          this.log('completed', `${label} 完成`);
           resolve();
         }
       };
@@ -277,7 +277,7 @@ class CryptoBotUI extends EventEmitter {
     });
   }
 
-  startTimer(label = 'Waiting confirmation') {
+  startTimer(label = '等待确认') {
     this.timerOverlay.show();
     const started = Date.now();
 
@@ -287,7 +287,7 @@ class CryptoBotUI extends EventEmitter {
       const mm = Math.floor(sec / 60).toString().padStart(2, '0');
       const ss = Math.floor(sec % 60).toString().padStart(2, '0');
       const dec = Math.floor((sec * 10) % 10);
-      this.timerOverlay.setContent(`{${this.opts.colors.secondary}-fg}[PENDING]{/${this.opts.colors.secondary}-fg} ${label}: {${this.opts.colors.info}-fg}${mm}:${ss}.${dec}{/${this.opts.colors.info}-fg}`);
+      this.timerOverlay.setContent(`{${this.opts.colors.secondary}-fg}[处理中]{/${this.opts.colors.secondary}-fg} ${label}: {${this.opts.colors.info}-fg}${mm}:${ss}.${dec}{/${this.opts.colors.info}-fg}`);
       this.render();
     };
 
@@ -300,7 +300,7 @@ class CryptoBotUI extends EventEmitter {
       this._intervals.delete(id);
       this.timerOverlay.hide();
       this.render();
-      this.log('completed', `${label} done`);
+      this.log('completed', `${label} 完成`);
     };
   }
 
@@ -354,11 +354,11 @@ class CryptoBotUI extends EventEmitter {
     Object.assign(this.walletData, partial);
     const C = this.opts.colors, w = this.walletData;
     const content =
-      `{${C.cyan}-fg}Address:{/${C.cyan}-fg} ${String(w.address)}\n` +
-      `{${C.success}-fg}${w.l1Symbol} Balance (L1 - ${w.l1Network}):{/${C.success}-fg} ${w.nativeBalanceL1}\n` +
-      `{${C.success}-fg}${w.l2Symbol} Balance (L2 - ${w.l2Network}):{/${C.success}-fg} ${w.nativeBalanceL2}\n` +
-      `{${C.orange}-fg}Tx Count L1:{/${C.orange}-fg} ${w.nonceL1}   ` +
-      `{${C.orange}-fg}Tx Count L2:{/${C.orange}-fg} ${w.nonceL2}`;
+      `{${C.cyan}-fg}地址:{/${C.cyan}-fg} ${String(w.address)}\n` +
+      `{${C.success}-fg}${w.l1Symbol} 余额 (L1 - ${w.l1Network}):{/${C.success}-fg} ${w.nativeBalanceL1}\n` +
+      `{${C.success}-fg}${w.l2Symbol} 余额 (L2 - ${w.l2Network}):{/${C.success}-fg} ${w.nativeBalanceL2}\n` +
+      `{${C.orange}-fg}L1交易数:{/${C.orange}-fg} ${w.nonceL1}   ` +
+      `{${C.orange}-fg}L2交易数:{/${C.orange}-fg} ${w.nonceL2}`;
     this.walletBox.setContent(content);
     this.render();
   }
@@ -402,18 +402,18 @@ class CryptoBotUI extends EventEmitter {
   log(type = 'info', message = '') {
     const C = this.opts.colors;
     const LOGS = {
-      success:   { symbol: '[SUCCESS]',  color: C.success },
-      error:     { symbol: '[ERROR]',    color: C.error },
-      warning:   { symbol: '[WARNING]',  color: C.warning },
-      info:      { symbol: '[INFO]',     color: C.info },
-      pending:   { symbol: '[PENDING]',  color: C.secondary },
-      completed: { symbol: '[DONE]',     color: C.success },
-      failed:    { symbol: '[FAILED]',   color: C.error },
-      swap:      { symbol: '[SWAP]',     color: C.cyan },
-      liquidity: { symbol: '[LIQUID]',   color: C.purple },
-      bridge:    { symbol: '[BRIDGE]',   color: C.orange }, 
-      stake:     { symbol: '[STAKE]',    color: C.pink },
-      gas:       { symbol: '[GAS]',      color: C.warning }
+      success:   { symbol: '[成功]',  color: C.success },
+      error:     { symbol: '[错误]',    color: C.error },
+      warning:   { symbol: '[警告]',  color: C.warning },
+      info:      { symbol: '[信息]',     color: C.info },
+      pending:   { symbol: '[处理中]',  color: C.secondary },
+      completed: { symbol: '[完成]',     color: C.success },
+      failed:    { symbol: '[失败]',   color: C.error },
+      swap:      { symbol: '[交换]',     color: C.cyan },
+      liquidity: { symbol: '[流动性]',   color: C.purple },
+      bridge:    { symbol: '[跨链]',   color: C.orange }, 
+      stake:     { symbol: '[质押]',    color: C.pink },
+      gas:       { symbol: '[燃料]',      color: C.warning }
     };
     const cfg = LOGS[type] || LOGS.info;
     const ts = moment().format('HH:mm:ss');
@@ -426,12 +426,12 @@ class CryptoBotUI extends EventEmitter {
   _wireKeys() {
     this.screen.key(['s', 'S'], () => {
       this.setActive(!this.isActive);
-      this.log(this.isActive ? 'success' : 'warning', this.isActive ? 'ACTIVE' : 'IDLE');
+      this.log(this.isActive ? 'success' : 'warning', this.isActive ? '激活' : '闲置');
     });
-    this.screen.key(['r', 'R'], () => { this._refreshAll(); this.render(); this.log('info','Redraw UI'); });
-    this.screen.key(['c', 'C'], () => { this.clearLogs(); this.log('info','Logs cleared'); });
-    this.screen.key(['t','T'], () => { this._tickerPaused = !this._tickerPaused; this.log('info', this._tickerPaused ? 'Ticker paused' : 'Ticker resumed'); });
-    this.screen.key(['l','L'], () => { this.log('info', `Log file: ${this.logFile}`); });
+    this.screen.key(['r', 'R'], () => { this._refreshAll(); this.render(); this.log('info','重绘界面'); });
+    this.screen.key(['c', 'C'], () => { this.clearLogs(); this.log('info','日志已清空'); });
+    this.screen.key(['t','T'], () => { this._tickerPaused = !this._tickerPaused; this.log('info', this._tickerPaused ? '跑马灯已暂停' : '跑马灯已恢复'); });
+    this.screen.key(['l','L'], () => { this.log('info', `日志文件: ${this.logFile}`); });
   }
 
   _setBannerFrame(text, font, colorHex) {
@@ -456,35 +456,35 @@ class CryptoBotUI extends EventEmitter {
   _drawStats() {
     const C = this.opts.colors;
     const content =
-      `{${C.success}-fg}Total Transactions:{/${C.success}-fg} ${this.transactionCount}\n` +
-      `{${C.info}-fg}Success Rate:{/${C.info}-fg} ${Number(this.successRate || 0).toFixed(1)}%\n` +
-      `{${C.error}-fg}Failed:{/${C.error}-fg} ${this.failedTx}\n` +
-      `{${C.secondary}-fg}Pending:{/${C.secondary}-fg} ${this.pendingTx}\n` +
-      `{${C.cyan}-fg}Avg Gas:{/${C.cyan}-fg} ${this.currentGasPrice || 0} Gwei`;
+      `{${C.success}-fg}总交易数:{/${C.success}-fg} ${this.transactionCount}\n` +
+      `{${C.info}-fg}成功率:{/${C.info}-fg} ${Number(this.successRate || 0).toFixed(1)}%\n` +
+      `{${C.error}-fg}失败数:{/${C.error}-fg} ${this.failedTx}\n` +
+      `{${C.secondary}-fg}处理中:{/${C.secondary}-fg} ${this.pendingTx}\n` +
+      `{${C.cyan}-fg}平均Gas:{/${C.cyan}-fg} ${this.currentGasPrice || 0} Gwei`;
     this.statsBox.setContent(content);
   }
   _drawActivity() {
     const C = this.opts.colors;
     const lines = [];
     if (this.isActive) {
-      lines.push(`{${C.success}-fg}[RUNNING] Active{/${C.success}-fg}`);
-      lines.push(`{${C.cyan}-fg}[MONITOR] Strategy{/${C.cyan}-fg}`);
+      lines.push(`{${C.success}-fg}[运行中] 激活{/${C.success}-fg}`);
+      lines.push(`{${C.cyan}-fg}[监控] 策略{/${C.cyan}-fg}`);
     } else {
-      lines.push(`{${C.warning}-fg}[IDLE] Waiting commands{/${C.warning}-fg}`);
+      lines.push(`{${C.warning}-fg}[闲置] 等待命令{/${C.warning}-fg}`);
     }
-    if (this.pendingTx > 0) lines.push(`{${C.secondary}-fg}[PENDING] ${this.pendingTx} Tx Processing{/${C.secondary}-fg}`);
+    if (this.pendingTx > 0) lines.push(`{${C.secondary}-fg}[处理中] ${this.pendingTx} 交易处理中{/${C.secondary}-fg}`);
     this.activityBox.setContent(lines.join('\n'));
   }
   _drawStatus() {
     const C = this.opts.colors;
     const now = moment();
     const statusColor = this.isActive ? C.success : C.warning;
-    const statusTextStr = this.isActive ? 'ACTIVE' : 'IDLE';
+    const statusTextStr = this.isActive ? '激活' : '闲置';
     const content =
-      `{bold}Status:{/bold} {${statusColor}-fg}${statusTextStr}{/${statusColor}-fg}  ` +
-      `{bold}Time:{/bold} {${C.cyan}-fg}${now.format('HH:mm:ss')}{/${C.cyan}-fg}  ` +
-      `{bold}Date:{/bold} {${C.info}-fg}${now.format('DD/MM/YYYY')}{/${C.info}-fg}  ` +
-      `{bold}Tx:{/bold} {${C.success}-fg}${this.transactionCount}{/${C.success}-fg}  ` +
+      `{bold}状态:{/bold} {${statusColor}-fg}${statusTextStr}{/${statusColor}-fg}  ` +
+      `{bold}时间:{/bold} {${C.cyan}-fg}${now.format('HH:mm:ss')}{/${C.cyan}-fg}  ` +
+      `{bold}日期:{/bold} {${C.info}-fg}${now.format('DD/MM/YYYY')}{/${C.info}-fg}  ` +
+      `{bold}交易:{/bold} {${C.success}-fg}${this.transactionCount}{/${C.success}-fg}  ` +
       `{bold}Gas:{/bold} {${C.purple}-fg}${this.currentGasPrice || 0} Gwei`;
     this.statusText.setContent(content);
   }
@@ -492,7 +492,7 @@ class CryptoBotUI extends EventEmitter {
     const C = this.opts.colors;
     const enabled = this.tokens.filter(t => t && t.enabled);
     if (enabled.length === 0) {
-      this.tokenBox.setContent(`{${C.info}-fg}No tokens enabled{/${C.info}-fg}`);
+      this.tokenBox.setContent(`{${C.info}-fg}暂无启用的代币{/${C.info}-fg}`);
       return;
     }
     const tokenColors = [C.cyan, C.purple, C.orange, C.pink, C.secondary, C.success, C.error, C.info, C.warning, C.primary];
@@ -532,8 +532,8 @@ class CryptoBotUI extends EventEmitter {
   _welcomeLogs() {
     this.log('info', '================================');
     this.log('success', `${this.opts.title}`);
-    this.log('info', 'Hotkeys: [S] active, [R] redraw, [C] clear, [T] ticker, [L] log path, [Q/ESC] exit');
-    this.log('info', `Log file: ${this.logFile}`);
+    this.log('info', '快捷键: [S] 激活, [R] 重绘, [C] 清空, [T] 跑马灯, [L] 日志路径, [Q/ESC] 退出');
+    this.log('info', `日志文件: ${this.logFile}`);
     this.log('info', '================================');
   }
 
